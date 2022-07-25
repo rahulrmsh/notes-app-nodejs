@@ -1,4 +1,4 @@
-// const createFile = require('./notes')
+const notes = require('./notes')
 const yargs = require('yargs/yargs')
 const { hideBin } = require('yargs/helpers')
 const chalk = require('chalk')
@@ -23,8 +23,11 @@ yargs(argv)
       }
     },
     handler: function (argv) {
-      log(chalk.greenBright('Title : '), argv.title)
-      log(chalk.greenBright('Body : '), argv.body)
+      try {
+        notes.addNote(argv.title, argv.body)
+      } catch (error) {
+        log(chalk.redBright('Error Occured.'))
+      }
     }
   })
   .command({
@@ -32,13 +35,17 @@ yargs(argv)
     describe: 'Remove notes',
     builder: {
       title: {
-        describe: 'Title of note',
+        describe: 'Title of Note to be Removed',
         demandOption: true,
         type: 'string'
       }
     },
     handler: function (argv) {
-      log(chalk.redBright('Note Removed With Title ' + argv.title))
+      try {
+        notes.removeNote(argv.title)
+      } catch (error) {
+        log(chalk.redBright('Error Occured.'))
+      }
     }
   })
   .command({
