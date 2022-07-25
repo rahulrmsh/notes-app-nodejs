@@ -2,7 +2,7 @@ const fs = require('fs')
 const chalk = require('chalk')
 
 const log = console.log
-const createFile = function (a, b) {
+const createFile = (a, b) => {
   fs.writeFileSync('notes.txt', 'New File Created')
 
   for (var i = 0; i < 5; i++) {
@@ -14,12 +14,10 @@ const createFile = function (a, b) {
   return data
 }
 
-const addNote = function (title, body) {
+const addNote = (title, body) => {
   const noteJson = loadNote()
-  const duplicateNotes = noteJson.filter(function (note) {
-    return note.title === title
-  })
-  if (duplicateNotes.length === 0) {
+  const duplicateNotes = noteJson.find((note) => note.title === title)
+  if (!duplicateNotes) {
     noteJson.push({
       title: title,
       body: body
@@ -30,9 +28,9 @@ const addNote = function (title, body) {
   }
 }
 
-const removeNote = function (title) {
+const removeNote = (title) => {
   const noteJson = loadNote()
-  const duplicateNotes = noteJson.filter(function (note) {
+  const duplicateNotes = noteJson.filter((note) => {
     return note.title !== title
   })
   if (duplicateNotes.length === noteJson.length) {
@@ -42,18 +40,40 @@ const removeNote = function (title) {
   }
 }
 
-const overwriteNote = function (note) {
+const listNotes = () => {
+  const noteJson = loadNote()
+  noteJson.sort((a, b) => a.title.localeCompare(b.title))
+  if (noteJson.length > 0) {
+    console.table(noteJson)
+  } else {
+    log(chalk.redBright('Error: No Notes Available'))
+  }
+}
+
+const readNotes = (title) => {
+  const noteJson = loadNote()
+  const noteAvailable = noteJson.find((note) => note.title === title)
+  if (noteAvailable) {
+    noteJson.filter((note) => {
+      if (note.title === title) { log(chalk.greenBright('Body:', note.body)) }
+    })
+  } else {
+    log(chalk.redBright('Error: No Match Found'))
+  }
+}
+const overwriteNote = (note) => {
   const noteString = JSON.stringify(note)
   fs.writeFileSync('notes.json', noteString)
   log(chalk.greenBright('Note Removed Successfully'))
 }
-const saveNote = function (note) {
+
+const saveNote = (note) => {
   const noteString = JSON.stringify(note)
   fs.writeFileSync('notes.json', noteString)
   log(chalk.greenBright('Note Added Successfully'))
 }
 
-const loadNote = function () {
+const loadNote = () => {
   try {
     const dataBuffer = fs.readFileSync('notes.json')
     const data = dataBuffer.toString()
@@ -66,5 +86,7 @@ const loadNote = function () {
 module.exports = {
   createFile: createFile,
   addNote: addNote,
-  removeNote: removeNote
+  removeNote: removeNote,
+  listNotes: listNotes,
+  readNotes: readNotes
 }

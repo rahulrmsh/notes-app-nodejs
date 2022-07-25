@@ -22,7 +22,7 @@ yargs(argv)
         type: 'string'
       }
     },
-    handler: function (argv) {
+    handler (argv) {
       try {
         notes.addNote(argv.title, argv.body)
       } catch (error) {
@@ -40,7 +40,7 @@ yargs(argv)
         type: 'string'
       }
     },
-    handler: function (argv) {
+    handler (argv) {
       try {
         notes.removeNote(argv.title)
       } catch (error) {
@@ -51,15 +51,30 @@ yargs(argv)
   .command({
     command: 'list',
     describe: 'List all notes',
-    handler: function () {
-      log(chalk.yellowBright('Listing all available notes'))
+    handler () {
+      try {
+        notes.listNotes()
+      } catch (error) {
+        log(chalk.redBright('Error Occured.'))
+      }
     }
   })
   .command({
     command: 'read',
-    describe: 'Read all notes',
-    handler: function () {
-      log(chalk.blueBright('Read all available notes'))
+    describe: 'Read a particular notes',
+    builder: {
+      title: {
+        describe: 'Title of Note to be Removed',
+        demandOption: true,
+        type: 'string'
+      }
+    },
+    handler (argv) {
+      try {
+        notes.readNotes(argv.title)
+      } catch (error) {
+        log(chalk.redBright('Error Occured.'))
+      }
     }
   })
   .parse()
